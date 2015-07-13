@@ -2,7 +2,7 @@ var container = document.createElement('div');
 document.body.appendChild(container);
 
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 2000 );
-camera.position.set(200, 200, 600);
+camera.position.set(0, 200, 600);
 
 var scene = new THREE.Scene();
 //scene.fog = new THREE.FogExp2(0x000000, 0.035);
@@ -12,28 +12,65 @@ loader.load( 'smooth-cube.json', function (geometry, materials) {
 
   var material = materials ?
     new THREE.MeshFaceMaterial( materials ) :
-    new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-  var object = new THREE.Mesh( geometry, material );
+    new THREE.MeshPhongMaterial({
+      specular: '#a9fcff',
+      color: '#00abb1',
+      emissive: '#006063',
+      shininess: 100
+    });
+  var object = new THREE.Mesh(geometry, material);
   object.scale.set(100, 100, 100);
+  object.position.set(0, 0, 0);
+  object.name = 'smooth-cube';
   scene.add( object );
 });
 
+// Grid
+//
+var gridHelper = new THREE.GridHelper(1000, 20);
+gridHelper.setColors(0x0000ff, 0x0000ff);
+scene.add(gridHelper);
+
+var plane = new THREE.Mesh(
+  new THREE.PlaneGeometry(1000, 1000, 100, 100),
+  new THREE.MeshPhongMaterial({
+    specular: '#a9fcff',
+    color: '#00abb1',
+    emissive: '#006063',
+    shininess: 100
+  })
+);
+scene.add(plane);
+
 // Lights
 //
-scene.add( new THREE.AmbientLight( 0xcccccc ) );
-pointLight = new THREE.PointLight( 0xff4400, 5, 30 );
-pointLight.position.set( 5, 0, 0 );
+//  scene.add( new THREE.AmbientLight( 0xcccccc ) );
+
+var pointLight = new THREE.PointLight( 0xffffff, 0.2, 0 );
+pointLight.position.set( 0, 0, 500 );
 scene.add( pointLight );
+
+var directionalLight = new THREE.DirectionalLight(0xffffff, 0.1);
+directionalLight.position.set( 500, 500, 500 );
+scene.add(directionalLight);
 
 // Renderer
 //
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 container.appendChild( renderer.domElement );
 
 function render() {
-	requestAnimationFrame( render );
-	renderer.render( scene, camera );
+	requestAnimationFrame(render);
+
+
+  var object = scene.getObjectByName('smooth-cube');
+  if(object) {
+    object.rotation.z += 0.01;
+    camera.position.z += 1;
+  }
+
+	renderer.render(scene, camera);
 }
 render();
