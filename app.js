@@ -7,6 +7,10 @@ camera.position.set(0, 200, 600);
 var scene = new THREE.Scene();
 //scene.fog = new THREE.FogExp2(0x000000, 0.035);
 
+var dynamicTexture  = new THREEx.DynamicTexture(512, 512);
+dynamicTexture.context.font	= 'bolder 90px Verdana';
+dynamicTexture.drawText('Hello', 32, 256, 'red');
+
 var loader = new THREE.JSONLoader();
 loader.load( 'smooth-cube.json', function (geometry, materials) {
 
@@ -16,7 +20,8 @@ loader.load( 'smooth-cube.json', function (geometry, materials) {
       specular: '#a9fcff',
       color: '#00abb1',
       emissive: '#006063',
-      shininess: 100
+      shininess: 100,
+      map: dynamicTexture.texture
     });
   var object = new THREE.Mesh(geometry, material);
   object.scale.set(100, 100, 100);
@@ -25,22 +30,24 @@ loader.load( 'smooth-cube.json', function (geometry, materials) {
   scene.add( object );
 });
 
+scene.add(
+  new THREE.Mesh(
+    new THREE.CubeGeometry(100, 100, 100),
+    new THREE.MeshPhongMaterial({
+      specular: '#a9fcff',
+      color: '#00abb1',
+      emissive: '#006063',
+      shininess: 100,
+      map: dynamicTexture.texture
+    })
+  )
+);
+
 // Grid
 //
 var gridHelper = new THREE.GridHelper(1000, 20);
 gridHelper.setColors(0x0000ff, 0x0000ff);
 scene.add(gridHelper);
-
-var plane = new THREE.Mesh(
-  new THREE.PlaneGeometry(1000, 1000, 100, 100),
-  new THREE.MeshPhongMaterial({
-    specular: '#a9fcff',
-    color: '#00abb1',
-    emissive: '#006063',
-    shininess: 100
-  })
-);
-scene.add(plane);
 
 // Lights
 //
